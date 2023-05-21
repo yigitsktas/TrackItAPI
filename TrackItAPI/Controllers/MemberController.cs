@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Microsoft.Net.Http.Headers;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
+using OpenAI_API.Completions;
+using OpenAI_API;
 
 namespace TrackItAPI.Controllers
 {
@@ -162,5 +164,31 @@ namespace TrackItAPI.Controllers
                 return BadRequest();
             }
         }
-    }
+
+		[HttpGet]
+		[Route("GetAnswer/{prompt}")]
+		public IActionResult GetResult(string prompt)
+		{
+			string apiKey = "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";
+			string answer = string.Empty;
+			var openai = new OpenAIAPI(apiKey);
+			CompletionRequest completion = new CompletionRequest();
+			completion.Prompt = prompt;
+			completion.Model = "text-davinci-003";
+			completion.MaxTokens = 4000;
+			var result = openai.Completions.CreateCompletionAsync(completion);
+			if (result != null)
+			{
+				foreach (var item in result.Result.Completions)
+				{
+					answer = item.Text;
+				}
+				return Ok(answer);
+			}
+			else
+			{
+				return BadRequest("Not found");
+			}
+		}
+	}
 }

@@ -169,9 +169,9 @@ namespace TrackItAPI.Controllers
 
 		[HttpGet]
         [Route("GetMemberRecipes/{id}")]
-        public IActionResult GetMemberRecipes(string id)
+        public IActionResult GetMemberRecipes(int id)
         {
-            var data = _unitOfWork.Recipes.GetWhere(X => X.MemberID == Convert.ToInt32(id));
+            var data = _unitOfWork.Recipes.GetWhere(X => X.MemberID == id);
 
             if (data != null)
             {
@@ -214,6 +214,26 @@ namespace TrackItAPI.Controllers
 				var nutrients = data.ToList();
 
 				return Ok(nutrients);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetRandomRecipe")]
+		public IActionResult GetRandomRecipe()
+		{
+			var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID > 0);
+
+			data = data.OrderBy(x => Guid.NewGuid()).Take(3);
+
+			if (data != null)
+			{
+				var recipe = data.ToList();
+
+				return Ok(recipe);
 			}
 			else
 			{

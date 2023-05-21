@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using TrackItAPI.Entities;
 using TrackItAPI.Helpers;
 using TrackItAPI.UnitOfWork;
@@ -171,6 +172,26 @@ namespace TrackItAPI.Controllers
 				var muscleGroups = data.ToList();
 
 				return Ok(muscleGroups);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetRandomWorkout")]
+		public IActionResult GetRandomWorkout()
+		{
+			var data = _unitOfWork.Workouts.GetWhere(x => x.WorkoutID > 0);
+
+			data = data.OrderBy(x => Guid.NewGuid()).Take(3);
+
+			if (data != null)
+			{
+				var workout = data.ToList();
+
+				return Ok(workout);
 			}
 			else
 			{
