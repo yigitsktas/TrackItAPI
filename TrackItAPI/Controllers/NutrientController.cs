@@ -193,6 +193,24 @@ namespace TrackItAPI.Controllers
 
 			if (data != null)
 			{
+				var nutrients = data.FirstOrDefault();
+
+				return Ok(nutrients);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetMemberNutrientLogs/{id}")]
+		public IActionResult GetMemberNutrientLogs(int id)
+		{
+			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.MemberID == id);
+
+			if (data != null)
+			{
 				var nutrients = data.ToList();
 
 				return Ok(nutrients);
