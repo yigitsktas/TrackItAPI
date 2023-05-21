@@ -57,19 +57,38 @@ namespace TrackItAPI.Controllers
             }
         }
 
-        [HttpPost]
+		[HttpGet]
+		[Route("GetNutrientByID/{id}")]
+		public IActionResult GetNutrientByID(int id)
+		{
+			var data = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == id);
+
+			if (data != null)
+			{
+				var nutrient = data.FirstOrDefault();
+
+				return Ok(nutrient);
+			}
+
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
         [Route("CreateMemberNutrient/{info}/{name}")]
         public IActionResult CreateMemberNutrient(string info, string name)
         {
-            if (string.IsNullOrEmpty(info))
+            if (!string.IsNullOrEmpty(info))
             {
                 var nutrient = JsonConvert.DeserializeObject<MemberNutrient>(info);
 
-                if (string.IsNullOrEmpty(info))
+                if (string.IsNullOrEmpty(name))
                 {
                     nutrient.NutrientID = _unitOfWork.Nutrients.GetIDByName(name);
                 }
-                else
+                else if (name != "a")
                 {
                     nutrient.NutrientID = 1;
                 }
@@ -165,5 +184,23 @@ namespace TrackItAPI.Controllers
                 return BadRequest();
             }
         }
-    }
+
+		[HttpGet]
+		[Route("GetMemberNutrientLog/{id}")]
+		public IActionResult GetMemberNutrientLog(int id)
+		{
+			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.MemberID == id);
+
+			if (data != null)
+			{
+				var nutrients = data.ToList();
+
+				return Ok(nutrients);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+	}
 }

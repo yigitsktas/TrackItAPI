@@ -14,10 +14,10 @@ namespace TrackItAPI.Entities
         [Key]
         public int MemberMetricID { get; set; }
         public int MemberID { get; set; }
-        public double Height { get; set; }
-        public double Weight { get; set; }
-        public double BMI { get; set; }
-        public double FatRate { get; set; }
+        public double? Height { get; set; }
+        public double? Weight { get; set; }
+        public double? BMI { get; set; }
+        public double? FatRate { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }
