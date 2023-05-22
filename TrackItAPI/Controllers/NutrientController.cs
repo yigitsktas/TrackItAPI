@@ -189,7 +189,7 @@ namespace TrackItAPI.Controllers
 		[Route("GetMemberNutrientLog/{id}")]
 		public IActionResult GetMemberNutrientLog(int id)
 		{
-			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.MemberID == id);
+			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.MemberNutrientID == id);
 
 			if (data != null)
 			{
