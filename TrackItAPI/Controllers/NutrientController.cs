@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using TrackItAPI.Entities;
 using TrackItAPI.UnitOfWork;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TrackItAPI.Controllers
 {
@@ -76,7 +79,7 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
-		[HttpGet]
+        [HttpGet]
         [Route("CreateMemberNutrient/{info}/{name}")]
         public IActionResult CreateMemberNutrient(string info, string name)
         {
@@ -104,11 +107,31 @@ namespace TrackItAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
+        [Route("DeleteMemberNutrient/{id}")]
+        public IActionResult DeleteMemberNutrient(int id)
+        {
+            var data = _unitOfWork.MemberNutrients.GetWhere(x => x.NutrientID == id);
+
+            if (data != null)
+            {
+                _unitOfWork.MemberNutrients.DeleteById(id);
+                _unitOfWork.SaveAsync();
+
+                return Ok();
+            }
+
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
         [Route("CreateRecipe/{info}")]
         public IActionResult CreateRecipe(string info)
         {     
-            if (string.IsNullOrEmpty(info))
+            if (!string.IsNullOrEmpty(info))
             {
                 var recipe = JsonConvert.DeserializeObject<Recipe>(info);
 
@@ -125,6 +148,26 @@ namespace TrackItAPI.Controllers
                     return BadRequest();
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("DeleteRecipe/{id}")]
+        public IActionResult DeleteDeleteRecipe(int id)
+        {
+            var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID == id);
+
+            if (data != null)
+            {
+                _unitOfWork.Recipes.DeleteById(id);
+                _unitOfWork.SaveAsync();
+
+                return Ok();
+            }
+
             else
             {
                 return BadRequest();
@@ -238,6 +281,82 @@ namespace TrackItAPI.Controllers
 			else
 			{
 				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetNutrientAnalytics/{id}/{info}/{date}")]
+		public IActionResult GetRandomRecipe(int id, string info, string date)
+        {
+            if (date == "weekly")
+            {
+                var data = _unitOfWork.MemberNutrients.GetWhere(x => x.CreatedDate >= DateTime.Now.AddDays(-7) && x.CreatedDate <= DateTime.Now && x.MemberID == id);
+
+				if (data != null)
+				{
+                    var list = data.ToList();
+
+                    if (info == "total carb")
+                    {
+						foreach (var item in list)
+						{
+
+
+
+						}
+					}
+                    else if (info == "total fat")
+					{
+						foreach (var item in list)
+						{
+
+
+
+						}
+					}
+					else if (info == "total sugar")
+					{
+						foreach (var item in list)
+						{
+
+
+
+						}
+					}
+					else if (info == "total protein")
+					{
+						foreach (var item in list)
+						{
+
+
+
+						}
+					}			
+					return Ok();
+				}
+                else
+                {
+                    return NotFound();  
+                }
+			}
+            else if (date == "monthly")
+            {
+				var data = _unitOfWork.MemberNutrients.GetWhere(x => x.CreatedDate >= DateTime.Now.AddDays(-30) && x.CreatedDate <= DateTime.Now && x.MemberID == id);
+
+				if (data != null)
+				{
+					var nutrients = data.ToList();
+
+					return Ok(nutrients);
+				}
+				else
+				{
+					return NotFound();
+				}
+			}
+            else
+            {
+				return Ok();
 			}
 		}
 	}

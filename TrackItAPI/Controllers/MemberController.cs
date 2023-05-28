@@ -137,7 +137,7 @@ namespace TrackItAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("CreateMemberMetric/{info}")]
         public IActionResult CreateMemberMetric(string info)
         {

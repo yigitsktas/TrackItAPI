@@ -20,7 +20,7 @@ namespace TrackItAPI.Controllers
 
         [HttpGet]
         [Route("GetMSWorkouts/{id}")]
-        public IActionResult GetMSWorkout(int id)
+        public IActionResult GetMSWorkouts(int id)
         {
             if (id > 0)
             {
@@ -43,7 +43,32 @@ namespace TrackItAPI.Controllers
             }
         }
 
-        [HttpGet]
+		[HttpGet]
+		[Route("GetMSWorkout/{id}")]
+		public IActionResult GetMSWorkout(int id)
+		{
+			if (id > 0)
+			{
+				var data = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberSpecificWorkoutID == id);
+
+				if (data != null)
+				{
+					var specWorkout = data.FirstOrDefault();
+
+					return Ok(specWorkout);
+				}
+				else
+				{
+					return NotFound();
+				}
+			}
+			else
+			{
+				return NotFound();
+			}
+		}
+
+		[HttpGet]
         [Route("CreateMSWorkout/{info}")]
         public IActionResult CreateMSWorkout(string info)
         {
@@ -71,7 +96,27 @@ namespace TrackItAPI.Controllers
             }
         }
 
-		[HttpGet]
+        [HttpGet]
+        [Route("DeleteMSWorkout/{id}")]
+        public IActionResult DeleteMSWorkout(int id)
+        {
+            var data = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberSpecificWorkoutID == id);
+
+            if (data != null)
+            {
+                _unitOfWork.MemberSpecificWorkouts.DeleteById(id);
+                _unitOfWork.SaveAsync();
+
+                return Ok();
+            }
+
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
 		[Route("GetWorkouts")]
 		public IActionResult GetWorkouts()
         {
