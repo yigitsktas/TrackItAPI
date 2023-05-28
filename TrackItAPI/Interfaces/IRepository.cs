@@ -22,10 +22,10 @@ namespace TrackItAPI.Interfaces
 
         public interface IMemberNutrientRepository : IGenericRepository<MemberNutrient>
         {
+            List<MemberNutrient> SqlRaw(DateTime MyDate, int id);
+		}
 
-        }
-
-        public interface IMemberSpecificWorkoutRepository : IGenericRepository<MemberSpecificWorkout>
+		public interface IMemberSpecificWorkoutRepository : IGenericRepository<MemberSpecificWorkout>
         {
 
         }

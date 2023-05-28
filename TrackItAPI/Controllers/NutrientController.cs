@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using TrackItAPI.DataModels;
 using TrackItAPI.Entities;
 using TrackItAPI.UnitOfWork;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -9,56 +10,56 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TrackItAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class NutrientController : ControllerBase
-    {
-        private readonly IUnitOfWork _unitOfWork;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class NutrientController : ControllerBase
+	{
+		private readonly IUnitOfWork _unitOfWork;
 
-        public NutrientController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+		public NutrientController(IUnitOfWork unitOfWork)
+		{
+			_unitOfWork = unitOfWork;
+		}
 
-        [HttpGet]
-        [Route("GetNutrients")]
-        public IActionResult GetNutrients()
-        {
-            var data = _unitOfWork.Nutrients.GetAll();
+		[HttpGet]
+		[Route("GetNutrients")]
+		public IActionResult GetNutrients()
+		{
+			var data = _unitOfWork.Nutrients.GetAll();
 
-            if (data != null)
-            {
-                var nutrients = data.ToList();
-                var response = JsonConvert.SerializeObject(nutrients);
-                
-                return Ok(response);
-            }
+			if (data != null)
+			{
+				var nutrients = data.ToList();
+				var response = JsonConvert.SerializeObject(nutrients);
 
-            else
-            {
-                return BadRequest();
-            }
-        }
+				return Ok(response);
+			}
 
-        [HttpGet]
-        [Route("GetNutrient/{name}")]
-        public IActionResult GetNutrient(string name)
-        {
-            var data = _unitOfWork.Nutrients.GetWhere(x => x.NutrientName == name);
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-            if (data != null)
-            {
-                var nutrients = data.ToList();
-                var response = JsonConvert.SerializeObject(nutrients);
+		[HttpGet]
+		[Route("GetNutrient/{name}")]
+		public IActionResult GetNutrient(string name)
+		{
+			var data = _unitOfWork.Nutrients.GetWhere(x => x.NutrientName == name);
 
-                return Ok(response);
-            }
+			if (data != null)
+			{
+				var nutrients = data.ToList();
+				var response = JsonConvert.SerializeObject(nutrients);
 
-            else
-            {
-                return BadRequest();
-            }
-        }
+				return Ok(response);
+			}
+
+			else
+			{
+				return BadRequest();
+			}
+		}
 
 		[HttpGet]
 		[Route("GetNutrientByID/{id}")]
@@ -79,118 +80,118 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
-        [HttpGet]
-        [Route("CreateMemberNutrient/{info}/{name}")]
-        public IActionResult CreateMemberNutrient(string info, string name)
-        {
-            if (!string.IsNullOrEmpty(info))
-            {
-                var nutrient = JsonConvert.DeserializeObject<MemberNutrient>(info);
+		[HttpGet]
+		[Route("CreateMemberNutrient/{info}/{name}")]
+		public IActionResult CreateMemberNutrient(string info, string name)
+		{
+			if (!string.IsNullOrEmpty(info))
+			{
+				var nutrient = JsonConvert.DeserializeObject<MemberNutrient>(info);
 
-                if (string.IsNullOrEmpty(name))
-                {
-                    nutrient.NutrientID = _unitOfWork.Nutrients.GetIDByName(name);
-                }
-                else if (name != "a")
-                {
-                    nutrient.NutrientID = 1;
-                }
+				if (string.IsNullOrEmpty(name))
+				{
+					nutrient.NutrientID = _unitOfWork.Nutrients.GetIDByName(name);
+				}
+				else if (name != "a")
+				{
+					nutrient.NutrientID = 1;
+				}
 
-                _unitOfWork.MemberNutrients.Add(nutrient);  
-                _unitOfWork.SaveAsync();
-                
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+				_unitOfWork.MemberNutrients.Add(nutrient);
+				_unitOfWork.SaveAsync();
 
-        [HttpGet]
-        [Route("DeleteMemberNutrient/{id}")]
-        public IActionResult DeleteMemberNutrient(int id)
-        {
-            var data = _unitOfWork.MemberNutrients.GetWhere(x => x.NutrientID == id);
+				return Ok();
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-            if (data != null)
-            {
-                _unitOfWork.MemberNutrients.DeleteById(id);
-                _unitOfWork.SaveAsync();
+		[HttpGet]
+		[Route("DeleteMemberNutrient/{id}")]
+		public IActionResult DeleteMemberNutrient(int id)
+		{
+			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.NutrientID == id);
 
-                return Ok();
-            }
+			if (data != null)
+			{
+				_unitOfWork.MemberNutrients.DeleteById(id);
+				_unitOfWork.SaveAsync();
 
-            else
-            {
-                return BadRequest();
-            }
-        }
+				return Ok();
+			}
 
-        [HttpGet]
-        [Route("CreateRecipe/{info}")]
-        public IActionResult CreateRecipe(string info)
-        {     
-            if (!string.IsNullOrEmpty(info))
-            {
-                var recipe = JsonConvert.DeserializeObject<Recipe>(info);
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-                if (recipe != null)
-                {
-                    _unitOfWork.Recipes.Add(recipe);
-                    _unitOfWork.SaveAsync();
+		[HttpGet]
+		[Route("CreateRecipe/{info}")]
+		public IActionResult CreateRecipe(string info)
+		{
+			if (!string.IsNullOrEmpty(info))
+			{
+				var recipe = JsonConvert.DeserializeObject<Recipe>(info);
 
-                    return Ok();
-                }
+				if (recipe != null)
+				{
+					_unitOfWork.Recipes.Add(recipe);
+					_unitOfWork.SaveAsync();
 
-                else
-                {
-                    return BadRequest();
-                }
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+					return Ok();
+				}
 
-        [HttpGet]
-        [Route("DeleteRecipe/{id}")]
-        public IActionResult DeleteDeleteRecipe(int id)
-        {
-            var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID == id);
+				else
+				{
+					return BadRequest();
+				}
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-            if (data != null)
-            {
-                _unitOfWork.Recipes.DeleteById(id);
-                _unitOfWork.SaveAsync();
+		[HttpGet]
+		[Route("DeleteRecipe/{id}")]
+		public IActionResult DeleteDeleteRecipe(int id)
+		{
+			var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID == id);
 
-                return Ok();
-            }
+			if (data != null)
+			{
+				_unitOfWork.Recipes.DeleteById(id);
+				_unitOfWork.SaveAsync();
 
-            else
-            {
-                return BadRequest();
-            }
-        }
+				return Ok();
+			}
 
-        [HttpGet]
-        [Route("GetRecipes")]
-        public IActionResult GetRecipes()
-        {
-            var data = _unitOfWork.Recipes.GetAll();
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-            if (data != null)
-            {
-                var recipes = data.ToList();
+		[HttpGet]
+		[Route("GetRecipes")]
+		public IActionResult GetRecipes()
+		{
+			var data = _unitOfWork.Recipes.GetAll();
 
-                return Ok(recipes);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+			if (data != null)
+			{
+				var recipes = data.ToList();
+
+				return Ok(recipes);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
 
 		[HttpGet]
 		[Route("GetRecipe/{id}")]
@@ -211,22 +212,22 @@ namespace TrackItAPI.Controllers
 		}
 
 		[HttpGet]
-        [Route("GetMemberRecipes/{id}")]
-        public IActionResult GetMemberRecipes(int id)
-        {
-            var data = _unitOfWork.Recipes.GetWhere(X => X.MemberID == id);
+		[Route("GetMemberRecipes/{id}")]
+		public IActionResult GetMemberRecipes(int id)
+		{
+			var data = _unitOfWork.Recipes.GetWhere(X => X.MemberID == id);
 
-            if (data != null)
-            {
-                var recipes = data.ToList();
+			if (data != null)
+			{
+				var recipes = data.ToList();
 
-                return Ok(recipes);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+				return Ok(recipes);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
 
 		[HttpGet]
 		[Route("GetMemberNutrientLog/{id}")]
@@ -287,77 +288,298 @@ namespace TrackItAPI.Controllers
 		[HttpGet]
 		[Route("GetNutrientAnalytics/{id}/{info}/{date}")]
 		public IActionResult GetRandomRecipe(int id, string info, string date)
-        {
-            if (date == "weekly")
-            {
-                var data = _unitOfWork.MemberNutrients.GetWhere(x => x.CreatedDate >= DateTime.Now.AddDays(-7) && x.CreatedDate <= DateTime.Now && x.MemberID == id);
+		{
+			List<NutrientAnalytics> NAnalytics = new();
 
-				if (data != null)
+			if (date == "weekly")
+			{
+				for (int j = 7; j >= 0; j--)
 				{
-                    var list = data.ToList();
+					DateTime MyDate = DateTime.Now.AddDays(j * -1);
 
-                    if (info == "total carb")
-                    {
-						foreach (var item in list)
+					var data = _unitOfWork.MemberNutrients.SqlRaw(MyDate, id);
+
+					if (data != null)
+					{
+						var list = data.ToList();
+
+						if (info == "totalcarb")
 						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
 
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
 
+								if (tc != null)
+								{
+									total += tc.TotalCarb;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
 
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalfat")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.TotalFat;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalsugar")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.TotalSugar;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalprotein")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.TotalProtein;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalcalorie")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.Calorie;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
 						}
 					}
-                    else if (info == "total fat")
+					else
 					{
-						foreach (var item in list)
+						return NotFound();
+					}
+				}
+			}
+
+			else if (date == "monthly")
+			{
+				for (int j = 30; j >= 0; j--)
+				{
+					DateTime MyDate = DateTime.Now.AddDays(j * -1);
+
+					var data = _unitOfWork.MemberNutrients.SqlRaw(MyDate, id);
+
+					if (data != null)
+					{
+						var list = data.ToList();
+
+						if (info == "totalcarb")
 						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
 
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
 
+								if (tc != null)
+								{
+									total += tc.TotalCarb;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
 
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalfat")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.TotalFat;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalsugar")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.TotalSugar;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalprotein")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.TotalProtein;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
+						}
+
+						else if (info == "totalcalorie")
+						{
+							NutrientAnalytics NAnalytic = new();
+							double total = 0;
+
+							foreach (var item in list)
+							{
+								var tc = _unitOfWork.Nutrients.GetWhere(x => x.NutrientID == item.NutrientID).FirstOrDefault();
+
+								if (tc != null)
+								{
+									total += tc.Calorie;
+								}
+								else
+								{
+									total = 0;
+								}
+							}
+
+							NAnalytic.X = MyDate.ToString("d.MM");
+							NAnalytic.Y = total.ToString("0.00");
+
+							NAnalytics.Add(NAnalytic);
 						}
 					}
-					else if (info == "total sugar")
+					else
 					{
-						foreach (var item in list)
-						{
-
-
-
-						}
+						return NotFound();
 					}
-					else if (info == "total protein")
-					{
-						foreach (var item in list)
-						{
-
-
-
-						}
-					}			
-					return Ok();
-				}
-                else
-                {
-                    return NotFound();  
-                }
-			}
-            else if (date == "monthly")
-            {
-				var data = _unitOfWork.MemberNutrients.GetWhere(x => x.CreatedDate >= DateTime.Now.AddDays(-30) && x.CreatedDate <= DateTime.Now && x.MemberID == id);
-
-				if (data != null)
-				{
-					var nutrients = data.ToList();
-
-					return Ok(nutrients);
-				}
-				else
-				{
-					return NotFound();
 				}
 			}
-            else
-            {
-				return Ok();
-			}
+
+			return Ok(NAnalytics);
 		}
 	}
 }
