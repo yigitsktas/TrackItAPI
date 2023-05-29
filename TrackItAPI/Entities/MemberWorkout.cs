@@ -14,8 +14,6 @@ namespace TrackItAPI.Entities
         [Key]
         public int MemberWorkoutID { get; set; }
         public int MemberID { get; set; }
-        public int WorkoutID { get; set; }
-        public int MemberSpecificWorkoutID { get; set; }
         public int MemberWorkoutName { get; set; }
         public string? Notes { get; set; }
         public bool isDone { get; set; }

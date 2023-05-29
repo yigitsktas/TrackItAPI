@@ -78,7 +78,14 @@ namespace TrackItAPI.Controllers
 
                 if (workout != null)
                 {
-					workout.Link = "https://www.youtube.com/watch?v=" + workout.Link;
+					if (!string.IsNullOrEmpty(workout.Link))
+					{
+						workout.Link = "https://www.youtube.com/watch?v=" + workout.Link;
+					}
+					else
+					{
+						workout.Link = string.Empty;
+					}
 
 					_unitOfWork.MemberSpecificWorkouts.Add(workout);
                     _unitOfWork.SaveAsync();
