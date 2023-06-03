@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LinqKit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Data.Entity;
 using TrackItAPI.DataModels;
 using TrackItAPI.Entities;
 using TrackItAPI.UnitOfWork;
@@ -258,6 +260,65 @@ namespace TrackItAPI.Controllers
 				var nutrients = data.ToList();
 
 				return Ok(nutrients);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetMemberNutrientFilteredLogs/{name}/{orderBy}/{id}")]
+		public IActionResult GetMemberNutrientFilteredLogs(string name, string orderBy, int id)
+		{
+			var predicate = PredicateBuilder.True<MemberNutrient>();
+
+			if (id > 0)
+			{
+				predicate = predicate.And(x => x.MemberID == id);
+			}
+			if (!string.IsNullOrEmpty(name))
+			{
+				var srch = _unitOfWork.Nutrients.GetWhere(x => x.NutrientName.Contains(name)).FirstOrDefault();
+				int ntrid = 0;
+
+				if (srch != null)
+				{
+				  ntrid = srch.NutrientID;
+				}
+
+				if (ntrid > 0)
+				{
+					predicate = predicate.And(x => x.NutrientID == ntrid);
+				}
+			}
+	
+			var data = _unitOfWork.MemberNutrients.GetWhere(predicate);
+
+			if (data != null)
+			{
+				var response = new List<MemberNutrient>();
+
+				if (!string.IsNullOrEmpty(orderBy))
+				{
+					if (orderBy == "date-asc")
+					{
+						var nutrients = data.OrderBy(x => x.CreatedDate).ToList();
+						response = nutrients;
+					}
+					if (orderBy == "date-desc")
+					{
+						var nutrients = data.OrderByDescending(x => x.CreatedDate).ToList();
+						response = nutrients;
+					}
+					if (orderBy == "0")
+					{
+						var nutrients = data.ToList();
+						response = nutrients;
+					}
+				}
+
+				return Ok(response);
 			}
 			else
 			{

@@ -17,7 +17,6 @@ namespace TrackItAPI.Entities
         public double? Height { get; set; }
         public double? Weight { get; set; }
         public double? BMI { get; set; }
-        public double? FatRate { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }
