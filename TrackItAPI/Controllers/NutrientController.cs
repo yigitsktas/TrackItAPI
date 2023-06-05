@@ -112,13 +112,15 @@ namespace TrackItAPI.Controllers
 
 		[HttpGet]
 		[Route("DeleteMemberNutrient/{id}")]
-		public IActionResult DeleteMemberNutrient(int id)
+		public IActionResult DeleteMemberNutrient(Guid id)
 		{
-			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.NutrientID == id);
+			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.GUID == id);
 
 			if (data != null)
 			{
-				_unitOfWork.MemberNutrients.DeleteById(id);
+				var deleteId = data.FirstOrDefault().MemberNutrientID;
+
+				_unitOfWork.MemberNutrients.DeleteById(deleteId);
 				_unitOfWork.SaveAsync();
 
 				return Ok();
@@ -159,13 +161,15 @@ namespace TrackItAPI.Controllers
 
 		[HttpGet]
 		[Route("DeleteRecipe/{id}")]
-		public IActionResult DeleteDeleteRecipe(int id)
+		public IActionResult DeleteDeleteRecipe(Guid id)
 		{
-			var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID == id);
+			var data = _unitOfWork.Recipes.GetWhere(x => x.GUID == id);
 
 			if (data != null)
 			{
-				_unitOfWork.Recipes.DeleteById(id);
+				var deleteId = data.FirstOrDefault().RecipeID;
+
+				_unitOfWork.Recipes.DeleteById(deleteId);
 				_unitOfWork.SaveAsync();
 
 				return Ok();
@@ -197,9 +201,9 @@ namespace TrackItAPI.Controllers
 
 		[HttpGet]
 		[Route("GetRecipe/{id}")]
-		public IActionResult GetRecipe(int id)
+		public IActionResult GetRecipe(Guid id)
 		{
-			var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID == id);
+			var data = _unitOfWork.Recipes.GetWhere(x => x.GUID == id);
 
 			if (data != null)
 			{
@@ -233,9 +237,9 @@ namespace TrackItAPI.Controllers
 
 		[HttpGet]
 		[Route("GetMemberNutrientLog/{id}")]
-		public IActionResult GetMemberNutrientLog(int id)
+		public IActionResult GetMemberNutrientLog(Guid id)
 		{
-			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.MemberNutrientID == id);
+			var data = _unitOfWork.MemberNutrients.GetWhere(x => x.GUID == id);
 
 			if (data != null)
 			{

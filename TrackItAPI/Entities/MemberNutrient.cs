@@ -13,6 +13,7 @@ namespace TrackItAPI.Entities
     {
         [Key]
         public int MemberNutrientID { get; set; }
+        public Guid GUID { get; set; }
         public int MemberID { get; set; }
         public int NutrientID { get; set; }
         public string? Notes { get; set; }

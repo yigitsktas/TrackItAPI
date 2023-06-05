@@ -17,6 +17,8 @@ namespace TrackItAPI.Interfaces
 
         void DeleteById(int id);
 
+        void DeleteByGUID(Guid id);
+
         void Delete(T model);
     }
 }

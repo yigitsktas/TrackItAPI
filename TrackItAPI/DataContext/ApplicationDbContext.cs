@@ -27,5 +27,6 @@ namespace TrackItAPI.DataContext
         public virtual DbSet<Recipe> Recipes { get; set; }
         public virtual DbSet<Workout> Workouts { get; set; }
         public virtual DbSet<WorkoutType> WorkoutType { get; set; }
+        public virtual DbSet<ChatLog> ChatLogs { get; set; }
     }
 }

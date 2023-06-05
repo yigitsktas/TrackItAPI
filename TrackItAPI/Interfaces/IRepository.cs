@@ -64,5 +64,10 @@ namespace TrackItAPI.Interfaces
         {
             int GetIDByName(string name);
         }
-    }
+
+		public interface IChatLogRepository : IGenericRepository<ChatLog>
+		{
+
+		}
+	}
 }

@@ -50,7 +50,17 @@ namespace TrackItAPI.Repositories
                 Table.Remove(toRemove);
         }
 
-        public void Update(T model)
+		public void DeleteByGUID(Guid id)
+		{
+
+
+			var toRemove = Table.Find(id);
+
+			if (toRemove != null)
+				Table.Remove(toRemove);
+		}
+
+		public void Update(T model)
         {
             Table.Update(model);
         }

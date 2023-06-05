@@ -20,6 +20,7 @@ namespace TrackItAPI
             services.AddTransient<IRecipeRepository, RecipeRepository>();
             services.AddTransient<IWorkoutRepository, WorkoutRepository>();
             services.AddTransient<IWorkoutTypeRepository, WorkoutTypeRepository>();
+            services.AddTransient<IChatLogRepository, ChatLogRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork.UnitOfWork>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }

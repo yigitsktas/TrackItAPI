@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TrackItAPI.DataContext;
+using TrackItAPI.Entities;
 using TrackItAPI.Repositories;
 using static TrackItAPI.Interfaces.IRepository;
 
@@ -34,6 +35,7 @@ namespace TrackItAPI.UnitOfWork
 
         public IWorkoutTypeRepository WorkoutTypes { get; private set; }
 
+        public IChatLogRepository ChatLogs { get; private set; }
 
 
         public UnitOfWork(ApplicationDbContext context)
@@ -51,6 +53,7 @@ namespace TrackItAPI.UnitOfWork
             Recipes = new RecipeRepository(_context);
             Workouts = new WorkoutRepository(_context);
             WorkoutTypes = new WorkoutTypeRepository(_context);
+			ChatLogs = new ChatLogRepository(_context);
         }
 
 

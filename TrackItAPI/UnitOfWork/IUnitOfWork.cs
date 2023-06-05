@@ -16,6 +16,7 @@ namespace TrackItAPI.UnitOfWork
         IRecipeRepository Recipes{ get; }
         IWorkoutRepository Workouts { get; }
         IWorkoutTypeRepository WorkoutTypes { get; }
+		IChatLogRepository ChatLogs { get; }
 
         void SaveAsync();
         void Dispose();

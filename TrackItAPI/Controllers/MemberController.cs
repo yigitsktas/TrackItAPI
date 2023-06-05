@@ -184,7 +184,7 @@ namespace TrackItAPI.Controllers
 		[Route("GetAnswer/{prompt}")]
 		public IActionResult GetResult(string prompt)
 		{
-			string apiKey = "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";
+			string apiKey = "";
 			string answer = string.Empty;
 			var openai = new OpenAIAPI(apiKey);
 			CompletionRequest completion = new CompletionRequest();
@@ -203,6 +203,96 @@ namespace TrackItAPI.Controllers
 			else
 			{
 				return BadRequest("Not found");
+			}
+		}
+
+		[HttpPost]
+		[Route("CreateChatLog")]
+		public IActionResult CreateChatLog([FromBody]ChatLog info)
+		{
+			if (info != null)
+			{
+				var data = info;
+
+				if (data != null)
+				{
+	                ChatLog chatLog = new ChatLog();
+
+                    chatLog.MemberID = data.MemberID;
+                    chatLog.Answer = data.Answer;
+                    chatLog.Prompt = data.Prompt;
+                    chatLog.CreatedDate = DateTime.Now;
+
+                    _unitOfWork.ChatLogs.Add(chatLog);
+                    _unitOfWork.SaveAsync();
+		            
+					return Ok();
+				}
+				else
+				{
+					return BadRequest();
+				}
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetChatLogs/{id}")]
+		public IActionResult GetChatLogs(int id)
+		{
+            var data = _unitOfWork.ChatLogs.GetWhere(x => x.MemberID == id);
+
+            if (data != null)
+            {
+                var chatLogs = data.ToList();
+
+                return Ok(chatLogs);
+            }
+            else
+            {
+                return BadRequest();
+            }
+		}
+
+		[HttpGet]
+		[Route("GetChatLog/{id}")]
+		public IActionResult GetChatLog(Guid id)
+		{
+			var data = _unitOfWork.ChatLogs.GetWhere(x => x.GUID == id);
+
+			if (data != null)
+			{
+				var chatLogs = data.FirstOrDefault();
+
+				return Ok(chatLogs);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("DeleteChatLog/{id}")]
+		public IActionResult DeleteChatLog(Guid id)
+		{
+			var data = _unitOfWork.ChatLogs.GetWhere(x => x.GUID == id);
+
+			if (data != null)
+			{
+				var deleteId = data.FirstOrDefault().LogID;
+
+                _unitOfWork.ChatLogs.DeleteById(deleteId);
+                _unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+			else
+			{
+				return BadRequest();
 			}
 		}
 	}
