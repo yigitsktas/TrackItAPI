@@ -193,7 +193,7 @@ namespace TrackItAPI.Controllers
 		[Route("GetAnswer/{prompt}")]
 		public IActionResult GetResult(string prompt)
 		{
-			string apiKey = "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";
+			string apiKey = "";
 			string answer = string.Empty;
 			var openai = new OpenAIAPI(apiKey);
 			CompletionRequest completion = new CompletionRequest();
