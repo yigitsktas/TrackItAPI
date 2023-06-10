@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.Security.Cryptography;
 using OpenAI_API.Completions;
 using OpenAI_API;
+using TrackItAPI.DataModels;
 
 namespace TrackItAPI.Controllers
 {
@@ -138,12 +139,12 @@ namespace TrackItAPI.Controllers
         }
 
         [HttpGet]
-        [Route("CreateMemberMetric/{info}")]
-        public IActionResult CreateMemberMetric(string info)
+        [Route("UpdateMember/{info}")]
+        public IActionResult UpdateMemberMetric(string info)
         {
             if (!string.IsNullOrEmpty(info))
             {
-                var memberMetric = JsonConvert.DeserializeObject<MemberMetric>(info);
+                var memberMetric = JsonConvert.DeserializeObject<MemberUpdate_DM>(info);
 
                 if (memberMetric != null)
                 {
@@ -164,7 +165,15 @@ namespace TrackItAPI.Controllers
 					}
                     else
                     {
-                        _unitOfWork.MemberMetrics.Add(memberMetric);
+                        MemberMetric memberMetricAdd = new();
+
+						memberMetricAdd.MemberID = memberMetric.MemberID;
+						memberMetricAdd.Weight = memberMetric.Weight;
+						memberMetricAdd.Height = memberMetric.Height;
+						memberMetricAdd.BMI = memberMetric.BMI;
+						memberMetricAdd.CreatedDate = DateTime.Now;    
+
+						_unitOfWork.MemberMetrics.Add(memberMetricAdd);
                         _unitOfWork.SaveAsync();
                     }
                     return Ok();
@@ -184,7 +193,7 @@ namespace TrackItAPI.Controllers
 		[Route("GetAnswer/{prompt}")]
 		public IActionResult GetResult(string prompt)
 		{
-			string apiKey = "";
+			string apiKey = "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";
 			string answer = string.Empty;
 			var openai = new OpenAIAPI(apiKey);
 			CompletionRequest completion = new CompletionRequest();

@@ -132,13 +132,15 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
-		[HttpGet]
-		[Route("CreateRecipe/{info}")]
-		public IActionResult CreateRecipe(string info)
+		[HttpPost]
+		[Route("CreateRecipe")]
+		public IActionResult CreateRecipe([FromBody] Recipe info)
 		{
-			if (!string.IsNullOrEmpty(info))
+			if (info != null)
 			{
-				var recipe = JsonConvert.DeserializeObject<Recipe>(info);
+				var recipe = info;
+
+				recipe.GUID = Guid.NewGuid();
 
 				if (recipe != null)
 				{

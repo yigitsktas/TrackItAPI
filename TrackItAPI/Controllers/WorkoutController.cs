@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrackItAPI.DataModels;
 using TrackItAPI.Entities;
 using TrackItAPI.Helpers;
 using TrackItAPI.UnitOfWork;
@@ -82,6 +83,8 @@ namespace TrackItAPI.Controllers
 						workout.Link = string.Empty;
 					}
 
+					workout.GUID = Guid.NewGuid();
+
 					_unitOfWork.MemberSpecificWorkouts.Add(workout);
                     _unitOfWork.SaveAsync();
 
@@ -107,6 +110,7 @@ namespace TrackItAPI.Controllers
 				MemberWorkoutLog memberWorkoutLog = new();
 
 				memberWorkoutLog.MemberID = id;
+				memberWorkoutLog.GUID = Guid.NewGuid();
 				memberWorkoutLog.MemberWorkoutName = name;
 				if (notes == "null")
 				{
@@ -123,8 +127,49 @@ namespace TrackItAPI.Controllers
 				_unitOfWork.MemberWorkoutLogs.Add(memberWorkoutLog);
 				_unitOfWork.SaveAsync();
 
-				return Ok(memberWorkoutLog.MemberWorkoutID);
+				return Ok(memberWorkoutLog.GUID);
 			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPost]
+		[Route("UpdateWorkoutLog")]
+		public IActionResult UpdateWorkoutLog([FromBody] MemberWorkoutLog info)
+		{
+			if (info != null)
+			{
+				info.UpdatedDate = DateTime.Now;
+
+				_unitOfWork.MemberWorkoutLogs.Update(info);
+				_unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("DeleteMWorkouLog/{id}")]
+		public IActionResult DeleteMWorkout(Guid id)
+		{
+			var data = _unitOfWork.MemberWorkoutLogs.GetWhere(x => x.GUID == id);
+
+			if (data != null)
+			{
+				var deleteId = data.FirstOrDefault().MemberWorkoutID;
+
+				_unitOfWork.MemberWorkoutLogs.DeleteById(deleteId);
+				_unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+
 			else
 			{
 				return BadRequest();
@@ -310,6 +355,114 @@ namespace TrackItAPI.Controllers
 				var workout = data.ToList();
 
 				return Ok(workout);
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPost]
+		[Route("CreateWorkoutLogStat")]
+		public IActionResult CreateWorkoutLogStat([FromBody] MemberWorkoutLogStat info)
+		{
+			if (info != null)
+			{
+				MemberWorkoutLogStat stat = new();
+
+				stat.MemberID = info.MemberID;
+				stat.MemberWorkoutLogID = info.MemberWorkoutLogID;
+				stat.ItemID = info.ItemID;
+				stat.TableName = info.TableName;
+				stat.Reps = info.Reps;
+				stat.Weight = info.Weight;
+
+				_unitOfWork.MemberWorkoutLogStat.Add(stat);
+				_unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetMemberWorkoutLogStat/{memberId}/{id}")]
+		public IActionResult GetMemberWorkoutLogStat(int memberId, int id)
+		{
+			if (memberId > 0 && id > 0)
+			{
+				var data = _unitOfWork.MemberWorkoutLogStat.GetWhere(x => x.MemberWorkoutLogID == id && x.MemberID == memberId);
+
+				if (data != null)
+				{
+					var logStat = data.ToList();
+					string workoutName = "";
+
+					List<MemberWorkoutLogStat_DM> memberWorkoutLogStats = new();
+					foreach (var item in logStat) 
+					{
+						MemberWorkoutLogStat_DM memberWorkoutLogStat = new();
+
+						memberWorkoutLogStat.MemberStatisticID = item.MemberStatisticsID;	
+						memberWorkoutLogStat.Reps = item.Reps;
+						memberWorkoutLogStat.Weight = item.Weight;
+						if (item.TableName == "Workout")
+						{
+							var a = _unitOfWork.Workouts.GetWhere(x => x.WorkoutID == item.ItemID);
+							if (a.Any())
+							{
+								workoutName = a.FirstOrDefault().WorkoutName;
+							}
+						}
+						else if (item.TableName == "MemberWorkout")
+						{
+							var b = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberSpecificWorkoutID == item.ItemID && x.MemberID == memberId);
+							if (b.Any())
+							{
+								workoutName = b.FirstOrDefault().WorkoutName;
+							}
+						}
+						memberWorkoutLogStat.WorkoutName = workoutName;
+
+						memberWorkoutLogStats.Add(memberWorkoutLogStat);
+					}
+
+					return Ok(memberWorkoutLogStats);
+				}
+				else
+				{
+					return NotFound();
+				}
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+
+		[HttpGet]
+		[Route("DeleteMemberWorkoutLogStat/{memberId}/{id}")]
+		public IActionResult DeleteMemberWorkoutLogStat(int memberId, int id)
+		{
+			if (memberId > 0 && id > 0)
+			{
+				var data = _unitOfWork.MemberWorkoutLogStat.GetWhere(x => x.MemberStatisticsID == id && x.MemberID == memberId);
+
+				if (data != null)
+				{
+					_unitOfWork.MemberWorkoutLogStat.Delete(data.FirstOrDefault());
+					_unitOfWork.SaveAsync();
+
+					return Ok();
+				}
+				else
+				{
+					return NotFound();
+				}
 			}
 			else
 			{
