@@ -13,7 +13,7 @@ namespace TrackItAPI.Entities
     {
         [Key]
         public int MemberSpecificWorkoutID { get; set; }
-		public Guid GUID { get; set; }
+		public Guid GUID { get; set; }  
 		public int MuscleGroupID { get; set; }
         public int WorkoutTypeID { get; set; }
         public int MemberID { get; set; }

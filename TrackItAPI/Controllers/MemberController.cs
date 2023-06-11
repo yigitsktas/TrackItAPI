@@ -227,6 +227,7 @@ namespace TrackItAPI.Controllers
 				{
 	                ChatLog chatLog = new ChatLog();
 
+                    chatLog.GUID = Guid.NewGuid();  
                     chatLog.MemberID = data.MemberID;
                     chatLog.Answer = data.Answer;
                     chatLog.Prompt = data.Prompt;

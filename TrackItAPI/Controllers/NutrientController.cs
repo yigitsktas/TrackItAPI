@@ -110,6 +110,30 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
+		[HttpPost]
+		[Route("UpdateMemberNutrient")]
+		public IActionResult UpdateMemberNutrient([FromBody] MemberNutrient memberNutrient)
+		{
+			if (memberNutrient != null)
+			{
+				var a = _unitOfWork.MemberNutrients.GetWhere(x => x.MemberNutrientID == memberNutrient.MemberNutrientID).FirstOrDefault();
+
+				a.ServingSize = memberNutrient.ServingSize;
+				a.Notes = memberNutrient.Notes;
+
+				_unitOfWork.MemberNutrients.Update(a);
+				_unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+			else
+			{
+
+				return BadRequest();
+			}
+		}
+
+
 		[HttpGet]
 		[Route("DeleteMemberNutrient/{id}")]
 		public IActionResult DeleteMemberNutrient(Guid id)
@@ -161,6 +185,23 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
+		[HttpPost]
+		[Route("UpdateRecipe")]
+		public IActionResult UpdateRecipe([FromBody] Recipe recipe)
+		{
+			if (recipe != null)
+			{
+				_unitOfWork.Recipes.Update(recipe);
+				_unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
 		[HttpGet]
 		[Route("DeleteRecipe/{id}")]
 		public IActionResult DeleteDeleteRecipe(Guid id)
@@ -187,7 +228,7 @@ namespace TrackItAPI.Controllers
 		[Route("GetRecipes")]
 		public IActionResult GetRecipes()
 		{
-			var data = _unitOfWork.Recipes.GetAll();
+			var data = _unitOfWork.Recipes.GetWhere(x => x.isPublic == true);
 
 			if (data != null)
 			{
@@ -336,7 +377,7 @@ namespace TrackItAPI.Controllers
 		[Route("GetRandomRecipe")]
 		public IActionResult GetRandomRecipe()
 		{
-			var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID > 0);
+			var data = _unitOfWork.Recipes.GetWhere(x => x.RecipeID > 0 && x.isPublic == true);
 
 			data = data.OrderBy(x => Guid.NewGuid()).Take(3);
 
@@ -354,7 +395,7 @@ namespace TrackItAPI.Controllers
 
 		[HttpGet]
 		[Route("GetNutrientAnalytics/{id}/{info}/{date}")]
-		public IActionResult GetRandomRecipe(int id, string info, string date)
+		public IActionResult GetNutrientAnalytics(int id, string info, string date)
 		{
 			List<NutrientAnalytics> NAnalytics = new();
 

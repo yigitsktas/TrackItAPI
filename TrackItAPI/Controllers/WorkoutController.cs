@@ -10,41 +10,41 @@ using static Azure.Core.HttpHeader;
 
 namespace TrackItAPI.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class WorkoutController : ControllerBase
-    {
-        private readonly IUnitOfWork _unitOfWork;
+	[ApiController]
+	[Route("api/[controller]")]
+	public class WorkoutController : ControllerBase
+	{
+		private readonly IUnitOfWork _unitOfWork;
 
-        public WorkoutController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+		public WorkoutController(IUnitOfWork unitOfWork)
+		{
+			_unitOfWork = unitOfWork;
+		}
 
-        [HttpGet]
-        [Route("GetMSWorkouts/{id}")]
-        public IActionResult GetMSWorkouts(int id)
-        {
-            if (id > 0)
-            {
-                var data = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberID == id);
+		[HttpGet]
+		[Route("GetMSWorkouts/{id}")]
+		public IActionResult GetMSWorkouts(int id)
+		{
+			if (id > 0)
+			{
+				var data = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberID == id);
 
-                if (data != null)
-                {
-                    var specWorkout = data.ToList();
+				if (data != null)
+				{
+					var specWorkout = data.ToList();
 
-                    return Ok(specWorkout);
-                }
-                else
-                {
-                    return NotFound();
-                }
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
+					return Ok(specWorkout);
+				}
+				else
+				{
+					return NotFound();
+				}
+			}
+			else
+			{
+				return NotFound();
+			}
+		}
 
 		[HttpGet]
 		[Route("GetMSWorkout/{id}")]
@@ -65,15 +65,15 @@ namespace TrackItAPI.Controllers
 		}
 
 		[HttpGet]
-        [Route("CreateMSWorkout/{info}")]
-        public IActionResult CreateMSWorkout(string info)
-        {
-            if (info != null)
-            {
-                var workout = JsonConvert.DeserializeObject<MemberSpecificWorkout>(info);
+		[Route("CreateMSWorkout/{info}")]
+		public IActionResult CreateMSWorkout(string info)
+		{
+			if (info != null)
+			{
+				var workout = JsonConvert.DeserializeObject<MemberSpecificWorkout>(info);
 
-                if (workout != null)
-                {
+				if (workout != null)
+				{
 					if (!string.IsNullOrEmpty(workout.Link))
 					{
 						workout.Link = "https://www.youtube.com/watch?v=" + workout.Link;
@@ -86,20 +86,37 @@ namespace TrackItAPI.Controllers
 					workout.GUID = Guid.NewGuid();
 
 					_unitOfWork.MemberSpecificWorkouts.Add(workout);
-                    _unitOfWork.SaveAsync();
+					_unitOfWork.SaveAsync();
 
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+					return Ok();
+				}
+				else
+				{
+					return BadRequest();
+				}
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPost]
+		[Route("UpdateMSWorkout")]
+		public IActionResult UpdateMSWorkout([FromBody] MemberSpecificWorkout info)
+		{
+			if (info != null)
+			{
+				_unitOfWork.MemberSpecificWorkouts.Update(info);
+				_unitOfWork.SaveAsync();
+
+				return Ok();
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
 
 		[HttpGet]
 		[Route("CreateMWorkoutLog/{name}/{notes}/{id}")]
@@ -213,31 +230,31 @@ namespace TrackItAPI.Controllers
 		}
 
 		[HttpGet]
-        [Route("DeleteMSWorkout/{id}")]
-        public IActionResult DeleteMSWorkout(Guid id)
-        {
-            var data = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.GUID == id);
+		[Route("DeleteMSWorkout/{id}")]
+		public IActionResult DeleteMSWorkout(Guid id)
+		{
+			var data = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.GUID == id);
 
-            if (data != null)
-            {
+			if (data != null)
+			{
 				var deleteId = data.FirstOrDefault().MemberSpecificWorkoutID;
 
-                _unitOfWork.MemberSpecificWorkouts.DeleteById(deleteId);
-                _unitOfWork.SaveAsync();
+				_unitOfWork.MemberSpecificWorkouts.DeleteById(deleteId);
+				_unitOfWork.SaveAsync();
 
-                return Ok();
-            }
+				return Ok();
+			}
 
-            else
-            {
-                return BadRequest();
-            }
-        }
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-        [HttpGet]
+		[HttpGet]
 		[Route("GetWorkouts")]
 		public IActionResult GetWorkouts()
-        {
+		{
 			var data = _unitOfWork.Workouts.GetAll();
 
 			if (data != null)
@@ -402,11 +419,11 @@ namespace TrackItAPI.Controllers
 					string workoutName = "";
 
 					List<MemberWorkoutLogStat_DM> memberWorkoutLogStats = new();
-					foreach (var item in logStat) 
+					foreach (var item in logStat)
 					{
 						MemberWorkoutLogStat_DM memberWorkoutLogStat = new();
 
-						memberWorkoutLogStat.MemberStatisticID = item.MemberStatisticsID;	
+						memberWorkoutLogStat.MemberStatisticID = item.MemberStatisticsID;
 						memberWorkoutLogStat.Reps = item.Reps;
 						memberWorkoutLogStat.Weight = item.Weight;
 						if (item.TableName == "Workout")
@@ -443,7 +460,6 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
-
 		[HttpGet]
 		[Route("DeleteMemberWorkoutLogStat/{memberId}/{id}")]
 		public IActionResult DeleteMemberWorkoutLogStat(int memberId, int id)
@@ -467,6 +483,68 @@ namespace TrackItAPI.Controllers
 			else
 			{
 				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[Route("GetWorkoutAnalytics/{id}/{date}")]
+		public IActionResult GetWorkoutAnalytics(int id, string date)
+		{
+			IEnumerable<MemberWorkoutLog> data = Enumerable.Empty<MemberWorkoutLog>();
+
+			int days = 0;
+
+			if (date == "weekly") { days = -7; }
+			else if (date == "monthly") { days = -31; }
+			else { return BadRequest(); }
+
+			data = _unitOfWork.MemberWorkoutLogs.GetWhere(x => x.MemberID == id && x.CreatedDate > DateTime.Now.AddDays(days) && x.CreatedDate <= DateTime.Now);
+
+			if (data.Any())
+			{
+				List<WorkoutAnalytics> workoutAnalyticsList = new();
+
+				var list = data.ToList();
+
+				foreach (var log in list)
+				{
+					WorkoutAnalytics workoutAnalytics = new();
+					List<WorkoutLogStat> workoutLogStats = new();
+
+					var stats = _unitOfWork.MemberWorkoutLogStat.GetWhere(x => x.MemberWorkoutLogID == log.MemberWorkoutID).ToList();
+
+					foreach (var stat in stats)
+					{
+						WorkoutLogStat workoutLogStat = new();
+
+						workoutLogStat.Weight = stat.Weight.ToString();
+						workoutLogStat.Reps = stat.Reps.ToString();
+
+						string str = "";
+						if (stat.TableName == "Workout")
+						{
+							str = _unitOfWork.Workouts.GetWhere(x => x.WorkoutID == stat.ItemID).FirstOrDefault().WorkoutName;
+							workoutLogStat.Name = str;
+						}
+						else if (stat.TableName == "MemberWorkout")
+						{
+							str = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberSpecificWorkoutID == stat.ItemID).FirstOrDefault().WorkoutName;
+							workoutLogStat.Name = str;
+						}
+						workoutLogStats.Add(workoutLogStat);
+					}
+
+					workoutAnalytics.Name = log.MemberWorkoutName;
+					workoutAnalytics.Logs = workoutLogStats;
+
+					workoutAnalyticsList.Add(workoutAnalytics);
+				}
+
+				return Ok(workoutAnalyticsList);
+			}
+			else
+			{
+				return NotFound();
 			}
 		}
 	}

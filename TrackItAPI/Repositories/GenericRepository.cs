@@ -52,8 +52,6 @@ namespace TrackItAPI.Repositories
 
 		public void DeleteByGUID(Guid id)
 		{
-
-
 			var toRemove = Table.Find(id);
 
 			if (toRemove != null)
