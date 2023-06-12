@@ -417,6 +417,7 @@ namespace TrackItAPI.Controllers
 				{
 					var logStat = data.ToList();
 					string workoutName = "";
+					string muscleGroup = "";
 
 					List<MemberWorkoutLogStat_DM> memberWorkoutLogStats = new();
 					foreach (var item in logStat)
@@ -431,7 +432,10 @@ namespace TrackItAPI.Controllers
 							var a = _unitOfWork.Workouts.GetWhere(x => x.WorkoutID == item.ItemID);
 							if (a.Any())
 							{
+								var z = a.FirstOrDefault();	
+								 
 								workoutName = a.FirstOrDefault().WorkoutName;
+								muscleGroup = _unitOfWork.MuscleGroups.GetWhere(x => x.MuscleGroupID == z.MuscleGroupID).FirstOrDefault().Name;
 							}
 						}
 						else if (item.TableName == "MemberWorkout")
@@ -439,9 +443,13 @@ namespace TrackItAPI.Controllers
 							var b = _unitOfWork.MemberSpecificWorkouts.GetWhere(x => x.MemberSpecificWorkoutID == item.ItemID && x.MemberID == memberId);
 							if (b.Any())
 							{
-								workoutName = b.FirstOrDefault().WorkoutName;
+								var w = b.FirstOrDefault();
+
+								workoutName = w.WorkoutName;
+								muscleGroup = _unitOfWork.MuscleGroups.GetWhere(x => x.MuscleGroupID == w.MuscleGroupID).FirstOrDefault().Name;
 							}
 						}
+						memberWorkoutLogStat.MuscleGroup = muscleGroup;
 						memberWorkoutLogStat.WorkoutName = workoutName;
 
 						memberWorkoutLogStats.Add(memberWorkoutLogStat);

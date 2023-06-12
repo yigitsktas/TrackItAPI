@@ -422,7 +422,7 @@ namespace TrackItAPI.Controllers
 
 								if (tc != null)
 								{
-									total += tc.TotalCarb;
+									total += (tc.TotalCarb / 100) * item.ServingSize;
 								}
 								else
 								{
@@ -447,7 +447,7 @@ namespace TrackItAPI.Controllers
 
 								if (tc != null)
 								{
-									total += tc.TotalFat;
+									total += (tc.TotalFat / 100) * item.ServingSize;
 								}
 								else
 								{
@@ -472,7 +472,7 @@ namespace TrackItAPI.Controllers
 
 								if (tc != null)
 								{
-									total += tc.TotalSugar;
+									total += (tc.TotalSugar / 100) *item.ServingSize;
 								}
 								else
 								{
@@ -497,7 +497,7 @@ namespace TrackItAPI.Controllers
 
 								if (tc != null)
 								{
-									total += tc.TotalProtein;
+									total += (tc.TotalProtein / 100) * item.ServingSize;
 								}
 								else
 								{
@@ -522,7 +522,7 @@ namespace TrackItAPI.Controllers
 
 								if (tc != null)
 								{
-									total += tc.Calorie;
+									total += (tc.Calorie / 100) * item.ServingSize;
 								}
 								else
 								{
