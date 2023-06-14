@@ -82,24 +82,13 @@ namespace TrackItAPI.Controllers
 			}
 		}
 
-		[HttpGet]
-		[Route("CreateMemberNutrient/{info}/{name}")]
-		public IActionResult CreateMemberNutrient(string info, string name)
+		[HttpPost]
+		[Route("CreateMemberNutrient")]
+		public IActionResult CreateMemberNutrient([FromBody] MemberNutrient info)
 		{
-			if (!string.IsNullOrEmpty(info))
+			if (info != null)
 			{
-				var nutrient = JsonConvert.DeserializeObject<MemberNutrient>(info);
-
-				if (string.IsNullOrEmpty(name))
-				{
-					nutrient.NutrientID = _unitOfWork.Nutrients.GetIDByName(name);
-				}
-				else if (name != "a")
-				{
-					nutrient.NutrientID = 1;
-				}
-
-				_unitOfWork.MemberNutrients.Add(nutrient);
+				_unitOfWork.MemberNutrients.Add(info);
 				_unitOfWork.SaveAsync();
 
 				return Ok();
@@ -307,65 +296,6 @@ namespace TrackItAPI.Controllers
 				var nutrients = data.ToList();
 
 				return Ok(nutrients);
-			}
-			else
-			{
-				return BadRequest();
-			}
-		}
-
-		[HttpGet]
-		[Route("GetMemberNutrientFilteredLogs/{name}/{orderBy}/{id}")]
-		public IActionResult GetMemberNutrientFilteredLogs(string name, string orderBy, int id)
-		{
-			var predicate = PredicateBuilder.True<MemberNutrient>();
-
-			if (id > 0)
-			{
-				predicate = predicate.And(x => x.MemberID == id);
-			}
-			if (!string.IsNullOrEmpty(name))
-			{
-				var srch = _unitOfWork.Nutrients.GetWhere(x => x.NutrientName.Contains(name)).FirstOrDefault();
-				int ntrid = 0;
-
-				if (srch != null)
-				{
-				  ntrid = srch.NutrientID;
-				}
-
-				if (ntrid > 0)
-				{
-					predicate = predicate.And(x => x.NutrientID == ntrid);
-				}
-			}
-	
-			var data = _unitOfWork.MemberNutrients.GetWhere(predicate);
-
-			if (data != null)
-			{
-				var response = new List<MemberNutrient>();
-
-				if (!string.IsNullOrEmpty(orderBy))
-				{
-					if (orderBy == "date-asc")
-					{
-						var nutrients = data.OrderBy(x => x.CreatedDate).ToList();
-						response = nutrients;
-					}
-					if (orderBy == "date-desc")
-					{
-						var nutrients = data.OrderByDescending(x => x.CreatedDate).ToList();
-						response = nutrients;
-					}
-					if (orderBy == "0")
-					{
-						var nutrients = data.ToList();
-						response = nutrients;
-					}
-				}
-
-				return Ok(response);
 			}
 			else
 			{

@@ -45,9 +45,9 @@ namespace TrackItAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("CreateUser/{info}")]
-        public IActionResult CreateUser(string info)
+        [HttpPost]
+        [Route("CreateUser")]
+        public IActionResult CreateUser([FromBody] Member info)
         {
             if (info == null)
             {
@@ -55,7 +55,7 @@ namespace TrackItAPI.Controllers
             }
             else
             {
-                var member = JsonConvert.DeserializeObject<Member>(info);
+                var member = info;
 
                 if (member != null)
                 {

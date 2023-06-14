@@ -12,31 +12,18 @@ namespace TrackItAPI.UnitOfWork
         private readonly ApplicationDbContext _context;
 
         public IFavRecipeRepository FavRecipes { get; private set; }
-
         public IMemberRepository Members { get; private set; }
-
         public IMemberMetricRepository MemberMetrics { get; private set; }
-
         public IMemberNutrientRepository MemberNutrients { get; private set; }
-
         public IMemberSpecificWorkoutRepository MemberSpecificWorkouts{ get; private set; }
-
         public IMemberWorkoutLogRepository MemberWorkoutLogs { get; private set; }
-
         public IMemberWorkoutLogStatRepository MemberWorkoutLogStat { get; private set; }
-
         public IMuscleGroupRepository MuscleGroups { get; private set; }
-
         public INutrientRepository Nutrients { get; private set; }
-
         public IRecipeRepository Recipes { get; private set; }
-
         public IWorkoutRepository Workouts { get; private set; }
-
         public IWorkoutTypeRepository WorkoutTypes { get; private set; }
-
         public IChatLogRepository ChatLogs { get; private set; }
-
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -55,7 +42,6 @@ namespace TrackItAPI.UnitOfWork
             WorkoutTypes = new WorkoutTypeRepository(_context);
 			ChatLogs = new ChatLogRepository(_context);
         }
-
 
         public void Dispose()
         {

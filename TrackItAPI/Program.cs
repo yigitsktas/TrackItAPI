@@ -30,7 +30,6 @@ var cookiePolicyOptions = new CookiePolicyOptions
     MinimumSameSitePolicy = SameSiteMode.Lax,
 };
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
